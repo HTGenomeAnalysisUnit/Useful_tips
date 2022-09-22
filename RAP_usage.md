@@ -16,7 +16,9 @@ Tips to work in the Research Analysis Platform of UKBB
 
 dxpy is the CLI tool of DNA Nexus that can be used to interact with the platform, like moving files in and out, install tools, run apps etc.
 
-The tool is available in the conda env `dxpy_0.227`
+It can be installed easily using conda `conda create -n dxpy_0.327 -c bioconda -c conda-forge dxpy`
+
+For popgen users the tool is available in the conda env `dxpy_0.327`
 
 ## Login and connect to a project
 
