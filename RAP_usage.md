@@ -11,6 +11,8 @@ Tips to work in the Research Analysis Platform of UKBB
     - [Interact with files in the project](#interact-with-files-in-the-project)
     - [Using tools](#using-tools)
     - [Terminate](#terminate)
+    - [Logout](#logout)
+   - [For further info](#for-further-info)
 
 ## Command line access using dxpy
 
@@ -84,6 +86,10 @@ Note that you need to bind the working directory ($PWD) to some path inside the 
 ### Terminate
 
 To terminate a session use `dx terminate $DX_JOB_ID` from inside the session
+
+### Logout
+
+To log out on the command line use `dx logout`
 
 
 
