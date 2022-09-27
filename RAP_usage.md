@@ -86,4 +86,7 @@ Note that you need to bind the working directory ($PWD) to some path inside the 
 To terminate a session use `dx terminate $DX_JOB_ID` from inside the session
 
 
+
+
+
 For further info, see full list of dx commands here: https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities
