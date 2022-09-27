@@ -18,9 +18,8 @@ dxpy is the CLI tool of DNA Nexus that can be used to interact with the platform
 
 It can be installed easily using conda `conda create -n dxpy_0.327 -c bioconda -c conda-forge dxpy`
 
-For popgen users the tool is available in the conda env `dxpy_0.327`
+For popgen users the tool is available in the conda env `dxpy_0.327` (to activate this conda environment type `conda dxpy_0.327`)
 
-test
 
 ## Login and connect to a project
 
@@ -85,3 +84,6 @@ Note that you need to bind the working directory ($PWD) to some path inside the 
 ### Terminate
 
 To terminate a session use `dx terminate $DX_JOB_ID` from inside the session
+
+
+For further info, see full list of dx commands here: https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities
