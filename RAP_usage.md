@@ -89,4 +89,4 @@ To terminate a session use `dx terminate $DX_JOB_ID` from inside the session
 
 ### For further info
 
-See full list of dx commands [here] (https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities)
+See full list of dx commands [here](https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities)
