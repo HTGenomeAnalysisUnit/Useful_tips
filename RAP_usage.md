@@ -18,7 +18,7 @@ dxpy is the CLI tool of DNA Nexus that can be used to interact with the platform
 
 It can be installed easily using conda `conda create -n dxpy_0.327 -c bioconda -c conda-forge dxpy`
 
-For popgen users the tool is available in the conda env `dxpy_0.327` (to activate this conda environment type `conda dxpy_0.327`)
+For popgen users the tool is available in the conda env `dxpy_0.327` (to activate this conda environment type `conda activate dxpy_0.327`)
 
 
 ## Login and connect to a project
