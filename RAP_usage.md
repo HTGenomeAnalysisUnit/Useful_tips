@@ -12,7 +12,9 @@ Tips to work in the Research Analysis Platform of UKBB
     - [Using tools](#using-tools)
     - [Terminate](#terminate)
     - [Logout](#logout)
-   - [For further info](#for-further-info)
+    - [For further info](#for-further-info)
+  - [Run tools with dx](#run-tools-with-dx)
+  - [Regenie example](#regenie-example)
 
 ## Command line access using dxpy
 
@@ -91,8 +93,51 @@ To terminate a session use `dx terminate $DX_JOB_ID` from inside the session
 
 To log out on the command line use `dx logout`
 
-
-
 ### For further info
 
 See full list of dx commands [here](https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities)
+
+## Run tools with dx
+
+In general once a tool is installed it can be run using
+
+```bash
+dx run [tool_name] \
+  -iifile="filename" #files to be imported from project
+  -icmd="[command_to_run]" #String with the command
+  --tag="Step1_merge" #A tag for monitorin purposes
+  --instance-type "mem1_ssd1_v2_x16" #Instance required for the job
+  --destination="/Regenie_test/" #Destination folder within the project to write to
+  --brief --yes
+```
+
+Keep in mind that for both `iifile` and `destination` you can use absolute path related to the project you are currently logged in or add a project id like `--destination-"project-id:/Data`
+
+In general, files required using `iifile` are visible directly in the working dir of the job. All files from the project are visible in `/mnt/project` read-only.
+
+See [dx run guide](https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities#run) for full options
+
+## Regenie example
+
+The following mainly reproduce [this tutorial](https://www.youtube.com/watch?v=762PVlyZJ-U)
+
+1. activate dxpy env `conda activate dxpy_0.327`
+2. login `dx login`
+3. set up the command
+
+  ```bash
+  run_merge="mkdir files;cd files;ln -s /mnt/project/Bulk/Genotype\ Results/Genotype\ calls/ukb22418_c* ./;cd ..;ls files/*.bed | sed 's/.bed//g' > files_to_merge.txt;plink --merge-list files_to_merge.txt --make-bed --autosome-xy --out ukb22418_c1_22_v2_merged;rm files_to_merge.txt;"
+  ```
+
+  Here we use a trick to avoid issues with spaces that are present in the files path. We first create symlinks in the `files` folder in the working directory and then save the list of files from `files/*.bed` into `files_to_merge.txt`. This file will be used as input for `plink` merge.
+
+4. Run command using dx
+
+  ```bash
+  dx run swiss-army-knife \
+    -icmd="${run_merge}" \
+    --tag="Step1_merge" \
+    --instance-type "mem1_ssd1_v2_x16" \
+    --destination="/Regenie_test/" \
+    --brief --yes
+  ```
