@@ -38,15 +38,15 @@ dir="/Regenie_test/data/"
 We are first creating a file listing all plink files (split by chromosome) to merge. Symbolic links are used to bypass the original path where the fileare stored, which contains space characters and causes plink to fail (symbolic links are located in folder simply to make things more tidy). Then we create a file listing all samples id to extract from our newly merged plink files
 ```bash
 run_plink_merge="mkdir temp; 
-	cd temp;
-	ln -s /mnt/project/Bulk/Genotype\ Results/Genotype\ calls/ukb22418_c[1-9]* ./;
-	cd ..;
-	ls temp/*.bed | sed 's/.bed//g' > plink_files_to_merge.txt;
-	awk '{print \$1,\$1}' /mnt/project${dir}random_cohort_participant.tsv | tail -n +2 > iid_list_plink.tsv
-	plink --merge-list plink_files_to_merge.txt \
+  cd temp;
+  ln -s /mnt/project/Bulk/Genotype\ Results/Genotype\ calls/ukb22418_c[1-9]* ./;
+  cd ..;
+  ls temp/*.bed | sed 's/.bed//g' > plink_files_to_merge.txt;
+  awk '{print \$1,\$1}' /mnt/project${dir}random_cohort_participant.tsv | tail -n +2 > iid_list_plink.tsv
+  plink --merge-list plink_files_to_merge.txt \
     --keep iid_list_plink.tsv \
     --make-bed --autosome --out ukb22418_c1_22_v2_merged_subset;
-	rm plink_files_to_merge.txt;"
+  rm plink_files_to_merge.txt;"
 ```
 #### Run command in dxpy:
 We use the [Swiss army knife app]() to run our command, since it includes Plink and Regenie softwares. We specify the cloud instance we require  
@@ -58,7 +58,7 @@ dx run swiss-army-knife \
   --destination="${dir}" --brief --yes
 ```
 
-
+############################################################################################################################################################
 
 
 #### 3 - Plink QC
