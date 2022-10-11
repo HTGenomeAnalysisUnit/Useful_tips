@@ -27,20 +27,15 @@ Input file needed:
   - Phenotype file reporting, for each individual, values for traits of interest and covariates. Individuals iid should be reported in the first two columns and named "FID" and "IID"
   - Genetic data file format. To speed-up the process, here we use genotype calls in Plink format (which need to be provided in a single, genome-wide file)
 
-## Symbolic links to plink files are created since source file are located in a path containing space characters, and this caused plink to fail
-## Symbolic links to plink files are located in folder simply to make things more tidy
-
-## First, 1) a file listing all plink files to merge and 2) a file listing all samples IIDs to keep are created
-
-- Set-up your folders
+#### Set-up your folders:
 ```bash
 dx mkdir -p /Regenie_test/step1/
 dx mkdir -p /Regenie_test/step2/
 dir="/Regenie_test/data/"
 ```
 
-- Create command to execute
-We are first 
+#### Create command to execute:
+We are first creating a file listing all plink files (split by chromosome) to merge. Symbolic links are used to bypass the original path where the fileare stored, which contains space characters and causes plink to fail (symbolic links are located in folder simply to make things more tidy). Then we create a file listing all samples id to extract from our newly merged plink files
 ```bash
 run_plink_merge="mkdir temp; 
 	cd temp;
@@ -53,6 +48,8 @@ run_plink_merge="mkdir temp;
     --make-bed --autosome --out ukb22418_c1_22_v2_merged_subset;
 	rm plink_files_to_merge.txt;"
 ```
+#### Run command in dxpy:
+We use the [Swiss army knife app]() to run our command, since it includes Plink and Regenie softwares. We specify the cloud instance we require  
 ```bash
 dx run swiss-army-knife \
   -icmd="${run_plink_merge}" \
