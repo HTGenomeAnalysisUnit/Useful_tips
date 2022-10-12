@@ -3,9 +3,8 @@
 - [Create target cohort](#create-target-cohort)
 - [Prepare_input_files](#prepare-input-files)
 - [Plink_QC](#plink-qc)
-- [GWAS](#GWAS)
-  - [Regenie_step1](#regenie-step1)
-  - [Regenie_step2](#regenie-step2)
+- [Regenie_step1](#regenie-step1)
+- [Regenie_step2](#regenie-step2)
 
 
 ### 0) Prerequisite - login in dxpy (DNA Nexus CLI tool used to interact with the platform) by typing:
@@ -31,7 +30,6 @@ Input file needed:
 ```bash
 dx mkdir -p /Regenie_test/step1/
 dx mkdir -p /Regenie_test/step2/
-dir="/Regenie_test/data/"
 ```
 
 #### Create command to execute:
@@ -42,67 +40,47 @@ run_plink_merge="mkdir temp;
   ln -s /mnt/project/Bulk/Genotype\ Results/Genotype\ calls/ukb22418_c[1-9]* ./;
   cd ..;
   ls temp/*.bed | sed 's/.bed//g' > plink_files_to_merge.txt;
-  awk '{print \$1,\$1}' /mnt/project${dir}random_cohort_participant.tsv | tail -n +2 > iid_list_plink.tsv
+  awk '{OFS=\"    \"};	NR==1 {print \"FID\",\"IID\",\$2,\$3};	NR > 1 {print \$1, \$1, \$2, \$3}' random_cohort.tsv > regenie_pheno_input.tsv
+  awk '{print \$1,\$1}' regenie_pheno_input.tsv > iid_list_plink.tsv
   plink --merge-list plink_files_to_merge.txt \
     --keep iid_list_plink.tsv \
-    --make-bed --autosome --out ukb22418_c1_22_v2_merged_subset;
-  rm plink_files_to_merge.txt;"
+    --make-bed --autosome --out ukb22418_c1_22_v2_merged_subset
+  rm plink_files_to_merge.txt"
 ```
+
 #### Run command in dxpy:
-We use the [Swiss army knife app]() to run our command, since it includes Plink and Regenie softwares. We specify the cloud instance we require  
+We use the [Swiss army knife app]() to run our command, since it includes Plink and Regenie softwares
 ```bash
 dx run swiss-army-knife \
+  -iin="/Regenie_test/data/random_cohort.tsv" \
   -icmd="${run_plink_merge}" \
-  --tag="plink_merge" \
+  --tag="pheno_input_and_plink_merge" \
   --instance-type "mem1_ssd1_v2_x16" \
-  --destination="${dir}" --brief --yes
+  --destination="/Regenie_test/data/" --brief --yes
 ```
 
-############################################################################################################################################################
 
+### 3) Plink QC
+Perform standard QC of newly merged, Plink genotype file
 
-#### 3 - Plink QC
-## Perform standard QC of Plink genotype files
-
-#dir="/Regenie_test/data/"
+```bash
 run_plink_qc="plink2 --bfile ukb22418_c1_22_v2_merged_subset \
 	--autosome --maf 0.01 --mac 20 --geno 0.1 --hwe 1e-15 --mind 0.1 \
 	--write-snplist --write-samples --no-id-header --out geno_array_snps_qc_pass"
 
 dx run swiss-army-knife \
-	-iin="${dir}ukb22418_c1_22_v2_merged_subset.bed" \
-	-iin="${dir}ukb22418_c1_22_v2_merged_subset.bim" \
-	-iin="${dir}ukb22418_c1_22_v2_merged_subset.fam" \
-	-iin="${dir}random_cohort_participant.tsv" \
+	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.bed" \
+	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.bim" \
+	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.fam" \
 	-icmd="${run_plink_qc}" \
 	--tag="plink_qc" \
 	--instance-type "mem1_ssd1_v2_x16" \
-	--destination="${dir}" --brief --yes
+	--destination="/Regenie_test/data/" --brief --yes
+```
 
-
-#### 4 - Regenie step 1 ####
-
-########################################################################################################################
-##### \t not working!!!!!!!!!!!!
-##### Is printed as "\t" character and not as tab. Ask Edoardo to check this since you suck with bash
-
-##### Reformat input file to regenie wanted format (can be done maybe at another step?? Directly forst one)
-regenie_input_format="echo -e "FID\tIID\tp21022\tp21001_i0" > header.tsv; 
-	awk '{print \$1,\$1,\$2,\$3}' random_cohort_participant.tsv | tail -n +2 > temp.tsv;
-	cat header.tsv temp.tsv > regenie_pheno_form_input.tsv;
-	rm header.tsv temp.tsv"
-
-dx run swiss-army-knife \
-	-iin="${dir}random_cohort_participant.tsv" \
-	-icmd="${regenie_input_format}" \
-	--tag="regenie_input_format" \
-	--instance-type "mem1_ssd1_v2_x2" \
-	--destination="${dir}" --brief --yes
-########################################################################################################################
-
-
-
-regenie_step1="regenie --step 1 \
+### 4) Regenie step 1
+```bash
+run_regenie_step1="regenie --step 1 \
 	--bed ukb22418_c1_22_v2_merged_subset \
 	--phenoFile regenie_pheno_form_input.tsv \
 	--covarFile regenie_pheno_form_input.tsv \
@@ -113,13 +91,40 @@ regenie_step1="regenie --step 1 \
 	--bsize 1000 --lowmem --qt --loocv --threads 16 --gz"
 
 dx run swiss-army-knife \
-	-iin="${dir}ukb22418_c1_22_v2_merged_subset.bed" \
-	-iin="${dir}ukb22418_c1_22_v2_merged_subset.bim" \
-	-iin="${dir}ukb22418_c1_22_v2_merged_subset.fam" \
-	-iin="${dir}geno_array_snps_qc_pass.snplist" \
-	-iin="${dir}regenie_pheno_form_input.tsv" \
-	-icmd="${regenie_step1}" \
+	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.bed" \
+	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.bim" \
+	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.fam" \
+	-iin="/Regenie_test/data/geno_array_snps_qc_pass.snplist" \
+	-iin="/Regenie_test/data/regenie_pheno_form_input.tsv" \
+	-icmd="${run_regenie_step1}" \
 	--tag="regenie_step1" \
 	--instance-type "mem1_ssd1_v2_x16" \
 	--destination="/Regenie_test/step1/" --brief --yes
+```
+### 5) Regenie step 2
+```bash
+for chr in {1..21}
+do
 
+  run_regenie_step2="regenie --step 2 \
+    --bgen /mnt/project/Bulk/Imputation/UKB\ imputation\ from\ genotype/ukb22828_c${chr}_b0_v3.bgen \
+    --sample /mnt/project/Bulk/Imputation/UKB\ imputation\ from\ genotype/ukb22828_c${chr}_b0_v3.sample \
+    --phenoFile /mnt/project/Regenie_test/data/regenie_pheno_form_input.tsv \
+    --covarFile /mnt/project/Regenie_test/data/regenie_pheno_form_input.tsv \
+    --pred bmi_gwas_test_pred.list \
+    --phenoCol p21001_i0 \
+    --covarCol p21022 \
+    --pThresh 0.01 --minMAC 100 \
+    --out bmi_gwas_test_chr${chr} \
+    --bsize 200 --qt --threads 16"
+
+    dx run swiss-army-knife \
+      -iin="/Regenie_test/step1/bmi_gwas_test_pred.list" \
+      -iin="/Regenie_test/step1/bmi_gwas_test_1.loco.gz" \
+      -icmd="${run_regenie_step2}" \
+      --name="regenie_step2_chr${chr}" \
+      --tag="regenie_step2" \
+      --instance-type="mem1_ssd1_v2_x16" \
+      --destination="/Regenie_test/step2/" --brief --yes
+done
+```
