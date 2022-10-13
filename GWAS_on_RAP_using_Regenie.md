@@ -40,8 +40,8 @@ run_plink_merge="mkdir temp;
   ln -s /mnt/project/Bulk/Genotype\ Results/Genotype\ calls/ukb22418_c[1-9]* ./;
   cd ..;
   ls temp/*.bed | sed 's/.bed//g' > plink_files_to_merge.txt;
-  awk 'NR==1 {print \"FID\",\"IID\",\$2,\$3};	NR > 1 {print \$1, \$1, \$2, \$3}' random_cohort.tsv > regenie_pheno_input.tsv
-  awk '{print \$1,\$1}' regenie_pheno_input.tsv > iid_list_plink.tsv
+  awk 'NR==1 {print \"FID\",\"IID\",\$2,\$3};	NR > 1 {print \$1, \$1, \$2, \$3}' random_cohort.tsv > regenie_pheno_form_input.tsv
+  awk '{print \$1,\$1}' regenie_pheno_form_input.tsv > iid_list_plink.tsv
   plink --merge-list plink_files_to_merge.txt \
     --keep iid_list_plink.tsv \
     --make-bed --autosome --out ukb22418_c1_22_v2_merged_subset
