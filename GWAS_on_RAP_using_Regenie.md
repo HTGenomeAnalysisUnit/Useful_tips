@@ -40,7 +40,7 @@ run_plink_merge="mkdir temp;
   ln -s /mnt/project/Bulk/Genotype\ Results/Genotype\ calls/ukb22418_c[1-9]* ./;
   cd ..;
   ls temp/*.bed | sed 's/.bed//g' > plink_files_to_merge.txt;
-  awk '{OFS=\"    \"};	NR==1 {print \"FID\",\"IID\",\$2,\$3};	NR > 1 {print \$1, \$1, \$2, \$3}' random_cohort.tsv > regenie_pheno_input.tsv
+  awk 'NR==1 {print \"FID\",\"IID\",\$2,\$3};	NR > 1 {print \$1, \$1, \$2, \$3}' random_cohort.tsv > regenie_pheno_input.tsv
   awk '{print \$1,\$1}' regenie_pheno_input.tsv > iid_list_plink.tsv
   plink --merge-list plink_files_to_merge.txt \
     --keep iid_list_plink.tsv \
@@ -116,7 +116,7 @@ do
     --covarCol p21022 \
     --pThresh 0.01 --minMAC 100 \
     --out bmi_gwas_test_chr${chr} \
-    --bsize 200 --qt --threads 16"
+    --bsize 200 --qt --threads 16 --gz"
 
     dx run swiss-army-knife \
       -iin="/Regenie_test/step1/bmi_gwas_test_pred.list" \
