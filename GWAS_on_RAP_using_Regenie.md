@@ -103,7 +103,7 @@ dx run swiss-army-knife \
 ```
 ### 5) Regenie step 2
 ```bash
-for chr in {1..21}
+for chr in {1..22}
 do
 
   run_regenie_step2="regenie --step 2 \
