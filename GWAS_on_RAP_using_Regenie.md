@@ -114,7 +114,7 @@ do
     --pred bmi_gwas_test_pred.list \
     --phenoCol p21001_i0 \
     --covarCol p21022 \
-    --pThresh 0.01 --minMAC 100 \
+    --minMAC 100 \
     --out bmi_gwas_test_chr${chr} \
     --bsize 200 --qt --threads 16 --gz"
 
