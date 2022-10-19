@@ -16,7 +16,7 @@ dx login
 
 ### 1) Create target cohort
 
-Since this is only an example, we extracted a subset from the available sample. We restricted the analysis to women, between 55 and 60 years old, with not missing BMI values. This subset cohort was created using the [Cohort browser](https://documentation.dnanexus.com/user/cohort-browser#opening-datasets-using-the-cohort-browser) and then exported into text file by using the [Table exporter app](https://ukbiobank.dnanexus.com/app/table-exporter).
+Since this is only an example, we extracted a subset from the available sample. We restricted the analysis to white British women, between 55 and 60 years old, with not missing BMI values. This subset cohort was created using the [Cohort browser](https://documentation.dnanexus.com/user/cohort-browser#opening-datasets-using-the-cohort-browser) and then exported into text file by using the [Table exporter app](https://ukbiobank.dnanexus.com/app/table-exporter).
 Find [here](https://dnanexus.gitbook.io/uk-biobank-rap/working-on-the-research-analysis-platform/accessing-phenotypic-data-as-a-file#selecting-fields-of-interest-in-the-cohort-browser) further details on how to access phenotypic data as a file check.
 
 
@@ -33,7 +33,7 @@ dx mkdir -p /Regenie_test/step2/
 ```
 
 #### Create command to execute:
-We are first creating a file listing all plink files (split by chromosome) to merge. Symbolic links are used to bypass the original path where the fileare stored, which contains space characters and causes plink to fail (symbolic links are located in folder simply to make things more tidy). Then we create a file listing all samples id to extract from our newly merged plink files
+We are first creating a file listing all plink files (split by chromosome) to merge. Symbolic links are used to bypass the original path where the file are stored, which contains space characters and causes plink to fail (symbolic links are located in folder simply to make things more tidy). Then we create a file listing all samples id to extract from our newly merged plink files - this last step is not necessary for the analysis sake, but only to generate smaller output files
 ```bash
 run_plink_merge="mkdir temp; 
   cd temp;
@@ -82,9 +82,9 @@ dx run swiss-army-knife \
 ```bash
 run_regenie_step1="regenie --step 1 \
 	--bed ukb22418_c1_22_v2_merged_subset \
-	--phenoFile regenie_pheno_form_input.tsv \
-	--covarFile regenie_pheno_form_input.tsv \
-	--extract geno_array_snps_qc_pass.snplist \
+	--phenoFile /mnt/project/Regenie_tes/data/regenie_pheno_form_input.tsv \
+	--covarFile /mnt/project/Regenie_tes/data/regenie_pheno_form_input.tsv \
+	--extract /mnt/project/Regenie_tes/data/geno_array_snps_qc_pass.snplist \
 	--phenoCol p21001_i0 \
 	--covarCol p21022 \
 	--out bmi_gwas_test \
@@ -94,8 +94,6 @@ dx run swiss-army-knife \
 	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.bed" \
 	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.bim" \
 	-iin="/Regenie_test/data/ukb22418_c1_22_v2_merged_subset.fam" \
-	-iin="/Regenie_test/data/geno_array_snps_qc_pass.snplist" \
-	-iin="/Regenie_test/data/regenie_pheno_form_input.tsv" \
 	-icmd="${run_regenie_step1}" \
 	--tag="regenie_step1" \
 	--instance-type "mem1_ssd1_v2_x16" \
