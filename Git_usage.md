@@ -1,5 +1,18 @@
 # GIT useful commands
 
+- [GIT useful commands](#git-useful-commands)
+  - [Init a new repo in a folder and connect to gitlab/github](#init-a-new-repo-in-a-folder-and-connect-to-gitlabgithub)
+  - [Create a new branch](#create-a-new-branch)
+  - [Delete a branch](#delete-a-branch)
+    - [locally](#locally)
+    - [remotely](#remotely)
+  - [Merge a branch into main](#merge-a-branch-into-main)
+  - [Change remote URL for an existing repo](#change-remote-url-for-an-existing-repo)
+  - [Undo a commit](#undo-a-commit)
+    - [Undoing a Specific Commit (That Has Been Pushed)](#undoing-a-specific-commit-that-has-been-pushed)
+    - [Undoing Your Last Commit (That Has Not Been Pushed)](#undoing-your-last-commit-that-has-not-been-pushed)
+    - [Undoing Local Changes That Have Been Committed (But Not Pushed)](#undoing-local-changes-that-have-been-committed-but-not-pushed)
+
 ## Init a new repo in a folder and connect to gitlab/github
 ```bash
 git init

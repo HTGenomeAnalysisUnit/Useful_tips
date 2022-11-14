@@ -24,7 +24,6 @@ It can be installed easily using conda `conda create -n dxpy_0.327 -c bioconda -
 
 For popgen users the tool is available in the conda env `dxpy_0.327` (to activate this conda environment type `conda activate dxpy_0.327`)
 
-
 ## Login and connect to a project
 
 To use dx CLI first login with your RAP credentials using `dx login`.
