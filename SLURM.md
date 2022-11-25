@@ -14,7 +14,7 @@ sinfo -o "%n %e %m %a %c %C"
 sinfo -l
 ```
 
-3. List active/queued jobs
+## List active/queued jobs
 
 ```bash
 squeue #all users
@@ -27,5 +27,24 @@ squeue -u username #for a specific user
 This returns full details on a queued/running job given the job ID
 
 ```bash
-scontrol show jobid -dd [job_number]
+scontrol show jobid -dd <job_number>
 ```
+
+## Monitor resources
+
+When a job is finished you can inspect the resource usage and the efficency using `seff`. This works also when the job is still running, but the reported stats may be not reliable
+
+```bash
+seff <job_number>
+```
+
+If you want to get real-time stats for a running job you can use `sstat` instead
+
+```bash
+sstat <job_number>
+
+#To return an easy to parse format with columns separated by |
+sstat --parsable <job_number>
+```
+
+Eventually, you can set which information to return using `--format` and comma separated list of fields. Available fields can be listed using `sstat --helpformat`.
