@@ -102,7 +102,7 @@ In general once a tool is installed it can be run using
 
 ```bash
 dx run [tool_name] \
-  -iifile="filename" #files to be imported from project
+  -iin="filename" #files to be imported from project
   -icmd="[command_to_run]" #String with the command
   --tag="Step1_merge" #A tag for monitorin purposes
   --instance-type "mem1_ssd1_v2_x16" #Instance required for the job
@@ -110,9 +110,9 @@ dx run [tool_name] \
   --brief --yes
 ```
 
-Keep in mind that for both `iifile` and `destination` you can use absolute path related to the project you are currently logged in or add a project id like `--destination-"project-id:/Data`
+Keep in mind that for both `iin` and `destination` you can use absolute path related to the project you are currently logged in or add a project id like `--destination-"project-id:/Data`
 
-In general, files required using `iifile` are visible directly in the working dir of the job. All files from the project are visible in `/mnt/project` read-only.
+In general, files required using `iin` are visible directly in the working dir of the job. All files from the project are visible in `/mnt/project` read-only.
 
 See [dx run guide](https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities#run) for full options
 
