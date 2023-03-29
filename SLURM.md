@@ -48,3 +48,17 @@ sstat --parsable <job_number>
 ```
 
 Eventually, you can set which information to return using `--format` and comma separated list of fields. Available fields can be listed using `sstat --helpformat`.
+
+## Cancel a job based on jobname
+
+For a single job name
+
+```bash
+scancel -n <jobname>
+```
+
+Or to capture all jobs with a pattern
+
+```bash
+squeue -u $USER -o "%.10i %.50j" | grep nf-CALL | awk '{print $1}' | xargs scancel
+```
