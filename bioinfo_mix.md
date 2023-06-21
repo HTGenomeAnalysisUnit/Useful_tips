@@ -34,3 +34,11 @@ gtfToGenePred \
     /dev/stdout | \
     awk 'BEGIN { OFS="\t"} {print $12, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10}'
 ```
+
+## Make introns BED file from GTF
+
+For this we use GTFTOOLS from genemine. This can be downloaded from: https://www.genemine.org/gtftools.php
+
+```bash
+gtftools.py -i introns.bed input.gtf
+```
