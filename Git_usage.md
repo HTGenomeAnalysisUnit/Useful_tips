@@ -7,7 +7,10 @@
     - [locally](#locally)
     - [remotely](#remotely)
   - [Merge a branch into main](#merge-a-branch-into-main)
-  - [Change remote URL for an existing repo](#change-remote-url-for-an-existing-repo)
+  - [Adjusting the remotes for a repo](#adjusting-the-remotes-for-a-repo)
+    - [List current remotes](#list-current-remotes)
+    - [Change remote URL for an existing repo](#change-remote-url-for-an-existing-repo)
+    - [Configure multiple remotes](#configure-multiple-remotes)
   - [Undo a commit](#undo-a-commit)
     - [Undoing a Specific Commit (That Has Been Pushed)](#undoing-a-specific-commit-that-has-been-pushed)
     - [Undoing Your Last Commit (That Has Not Been Pushed)](#undoing-your-last-commit-that-has-not-been-pushed)
@@ -49,9 +52,32 @@ git merge new-branch
 git push
 ```
 
-## Change remote URL for an existing repo
+## Adjusting the remotes for a repo
+
+### List current remotes
+
+`git remote -v`
+
+### Change remote URL for an existing repo
+
+In general the syntax is `git remote add REMOTE-ID REMOTE-URL`
+
+So to change the main remote URL for a repo you can do:
 
 `git remote set-url origin https://git-repo/new-repository.git`
+
+### Configure multiple remotes
+
+If you don’t want to create an extra remote named all, you can skip the first command and use the remote origin instead of all in the subsequent command(s)
+
+```bash
+# Create a new remote called "all" with the URL of the primary repo.
+git remote add all git@github.com:jigarius/toggl2redmine.git
+# Re-register the remote as a push URL.
+git remote set-url --add --push all git@github.com:jigarius/toggl2redmine.git
+# Add a push URL to a remote. This means that "git push" will also push to this git URL.
+git remote set-url --add --push all git@bitbucket.org:jigarius/toggl2redmine.git
+```
 
 ## Undo a commit
 
