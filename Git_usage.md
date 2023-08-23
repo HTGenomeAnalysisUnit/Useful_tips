@@ -2,6 +2,7 @@
 
 - [GIT useful commands](#git-useful-commands)
   - [Init a new repo in a folder and connect to gitlab/github](#init-a-new-repo-in-a-folder-and-connect-to-gitlabgithub)
+  - [Configure user name and email](#configure-user-name-and-email)
   - [Create a new branch](#create-a-new-branch)
   - [Delete a branch](#delete-a-branch)
     - [locally](#locally)
@@ -25,6 +26,24 @@ git commit -m "first commit"
 git branch -M main
 git remote add origin $git_repo
 git push -u origin main
+```
+
+## Configure user name and email
+
+When you use git for the first time, you need to configure git `user.name` and `user.email`. Note that these are used only to track changes and do not need to be the same as your GitLab/GitHub credentials.
+
+You can configure user name and email globally for all repositories using the following commands:
+
+```bash
+git config --global user.name "name.surname"
+git config --global user.email "contact@email.com"
+```
+
+You can also configure user name and email for a specific repository. Navigate intot he repository folder and then use the following commands:
+
+```bash
+git config user.name "name.surname"
+git config user.email "contact@email.com"
 ```
 
 ## Create a new branch
