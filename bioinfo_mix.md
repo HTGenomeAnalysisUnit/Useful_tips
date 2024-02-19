@@ -42,3 +42,16 @@ For this we use GTFTOOLS from genemine. This can be downloaded from: https://www
 ```bash
 gtftools.py -i introns.bed input.gtf
 ```
+
+## Get contig sizes for GRCh38
+
+GRCh38 assembly contains various categories of contigs. The following command can be used to get the contig sizes, the total size and the size of the effective contigs (excluding decoys and alts) from the fasta file. The HLA contigs are also excluded since they do not represent additional sequences but rather alternative alleles.
+
+```bash
+GENOME_NAME="iGenomes_2023.1_GATK_GRCh38"
+REF_GENOME="/processing_data/reference_datasets/iGenomes/2023.1/Homo_sapiens/GATK/GRCh38/Sequence/WholeGenomeFasta/Homo_sapiens_assembly38.fasta" 
+
+grep "^>" $REF_GENOME | tr -s " " "\t" | cut -f1,4 | sed -e 's/>//g' -e 's/LN://g' | grep -v "^HLA" \
+| awk '{tot_sum+=$2}; $1 !~ /(_alt|_decoy)/ {sum_effective += $2}; {print ;}; END {print "effective_size", sum_effective; print "total_size", tot_sum}' \
+> ${GENOME_NAME}.sizes.txt
+```
