@@ -7,6 +7,7 @@
     - [Reference for filtering strategies](#reference-for-filtering-strategies)
     - [Implementation](#implementation)
   - [Perform associations on the WES data](#perform-associations-on-the-wes-data)
+    - [Example commands for step2](#example-commands-for-step2)
 
 ## QC of WES data
 
@@ -73,8 +74,8 @@ We have applied this filtering strategy to the final release of WES data resulti
 | c20        | 686927     | 552480      | 0.804278      |
 | c21        | 289754     | 223251      | 0.770485      |
 | c22        | 613857     | 497224      | 0.81          |
-| cX         | 1304086    | 726377      | 0.557001      |
-| total      | 26388600   | 20582336    | 0.779971      |
+| cX         | 652043     | 396406      | 0.607945      |
+| total      | 27040643   | 20978742    | 0.775823      |
 
 No QC is provided for variants on chrY due do generally noisy data on chrY.
 
@@ -127,6 +128,27 @@ In step1, you can use the small set of independent variant used normally for GWA
 When performing step2 one should include the following adjustments:
 
 - exclude chrY from your analysis is reccomended
-- use the list of passing variants to automatically subset input variants using the `--extract` option in regenie. Files for passing variants are in the `exome_qc/pass_variants` folder.
+- use the list of passing variants to automatically subset input variants using the `--extract` option in regenie. The `exome_qc/pass_variants` folder contains a list of pass variants for each chunk. The lists of passing variants for each chromosome are in `exome_qc/pass_variants/per_chromosome`. These files have the same name of the corresponding BGEN/PLINK/VCF file with the suffix `.pass_variants.txt`.
 - remove samples with sex discordance using the `--remove` option in regenie. The list of individuals to remove is in the file `exome_qc/ukbb_WES_sex_mismatch_sample_ids.tsv`.
 - [UKB best-practises](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=914) strongly suggests to include a batch covariate when running analysis on WES variants to compensate for different capture kits used across different batches. In particular, samples processed in the first 50k release used a different capture kit than the rest. This information is contained in the [category 170](https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=170) of UKB data. The batches for each samples are available in the `exome_qc/ukbb_WES_tranche_release_cov.tsv` file and you should add this to your covariates when running a rare-variant / gene burden test or any other test using WES variant data.
+
+### Example commands for step2
+
+```bash
+CHROM=1
+INPUT_PREFIX="ukb23157_"
+BGEN_FOLDER='/mnt/project/Bulk/Exome\ sequences/Population\ level\ exome\ OQFE\ variants,\ BGEN\ format\ -\ final\ release'
+QC_FOLDER='/mnt/project/exome_qc'
+
+CHROMOSOME_PREFIX="${INPUT_PREFIX}_c${CHROM}_b0_v1"
+
+regenie \
+  --step 2 \
+  --bgen ${BGEN_FOLDER}/${CHROMOSOME_PREFIX}.bgen  \
+  --sample ${BGEN_FOLDER}/${CHROMOSOME_PREFIX}.sample \
+  --phenoFile pheno.tsv \
+  --covarFile covar.tsv \
+  --extract ${QC_FOLDER}/pass_variants/per_chromosome/${CHROMOSOME_PREFIX}.pass_variants.txt \
+  --remove ${QC_FOLDER}/ukbb_WES_sex_mismatch_sample_ids.tsv
+  [other options...]
+```
