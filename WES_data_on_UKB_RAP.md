@@ -1,6 +1,16 @@
-# Clean WES data on UKB RAP
+# Use WES data on UKB RAP
 
-## QC workflow
+- [Use WES data on UKB RAP](#use-wes-data-on-ukb-rap)
+  - [QC of WES data](#qc-of-wes-data)
+    - [QC workflow](#qc-workflow)
+    - [Results](#results)
+    - [Reference for filtering strategies](#reference-for-filtering-strategies)
+    - [Implementation](#implementation)
+  - [Perform associations on the WES data](#perform-associations-on-the-wes-data)
+
+## QC of WES data
+
+### QC workflow
 
 UKB WES genotypes are provided in RAP as raw calls after merging of sample level data with GLNexus. See the [UKB FAQ](https://www.ukbiobank.ac.uk/media/najcnoaz/access_064-uk-biobank-exome-release-faq_v11-1_final-002.pdf) at point 17 about this.
 
@@ -31,10 +41,11 @@ For each WES VCF file in UKB, these metrics are stored in a table with suffix `.
    - PCT_GQABOVE20_NOMISS >= 0.75
    - N_BALANCEDHET / N_HET >= 0.5
    - F_MISSING < 0.1
+   - HWE p-value > 1e-15 (this is not applied for chrX)
 
 The list of passing variant IDs is stored in a file with suffix `.passing_variants.txt`.
 
-## Results
+### Results
 
 We have applied this filtering strategy to the final release of WES data resulting in the following number of passing variants:
 
@@ -62,9 +73,12 @@ We have applied this filtering strategy to the final release of WES data resulti
 | c20        | 686927     | 552480      | 0.804278      |
 | c21        | 289754     | 223251      | 0.770485      |
 | c22        | 613857     | 497224      | 0.81          |
+| cX         | 1304086    | 726377      | 0.557001      |
 | total      | 26388600   | 20582336    | 0.779971      |
 
-## Reference for filtering strategies
+No QC is provided for variants on chrY due do generally noisy data on chrY.
+
+### Reference for filtering strategies
 
 1. QC from [original UKB WES paper](https://www.nature.com/articles/s41588-021-00885-0#Sec7):
 
@@ -74,7 +88,7 @@ We have applied this filtering strategy to the final release of WES data resulti
 
 >SNV genotypes with read depth (DP) less than 7 and indel genotypes with read depth less than 10 are changed to no-call genotypes. After the application of the DP genotype filter, a variant-level allele-balance filter is applied, retaining only variants that meet either of the following criteria: (i) at least one homozygous variant carrier; or (ii) at least one heterozygous variant carrier with an allele balance (AB) greater than the cut-off (AB ≥ 0.15 for SNVs and AB ≥ 0.20 for indels).
 
-## Implementation
+### Implementation
 
 With this command we split multi-allelic variants in single records and then return a table of metrics for all variants.
 
@@ -93,19 +107,26 @@ bcftools norm -m- -f ${REF_GENOME} -Ou ${INPUT_PREFIX}.bcf \
 From the metrics table we can get a list of QCed variants with this command:
 
 ```bash
+#For autosomes
 tail -n+2 ${INPUT_PREFIX}.metrics.tsv \
 | awk -F"\t" '{if ($5 == 0) f_het=1; else f_het=$6/$5}; ($2 == "PASS" || $2 == ".") && $3 >= 0.9 && $4 >= 0.75 && $7 < 0.1 && $9 > 1e-15 && f_het >= 0.5' \
+| cut -f1 > ${INPUT_PREFIX}.pass_variants.txt
+
+#For X chromosome we do not consider HWE test
+tail -n+2 ${INPUT_PREFIX}.metrics.tsv \
+| awk -F"\t" '{if ($5 == 0) f_het=1; else f_het=$6/$5}; ($2 == "PASS" || $2 == ".") && $3 >= 0.9 && $4 >= 0.75 && $7 < 0.1 && f_het >= 0.5' \
 | cut -f1 > ${INPUT_PREFIX}.pass_variants.txt
 ```
 
 ## Perform associations on the WES data
 
+Here we assume you want to use REGENIE to perform association / rare-variant tests on the WES data.
+
 In step1, you can use the small set of independent variant used normally for GWAS analysis.
 
-In step 2, one can use the list of passing variants to automatically subset input variants in regenie with the `--extract` option at step2 stage. Files for passing variants are in the `exome_qc/pass_variants` folder.
+When performing step2 one should include the following adjustments:
 
-We have also compiled a list of samples to remove in the file `exome_qc/ukbb_WES_sex_mismatch_sample_ids.tsv` and you should also filter your samples accordingly using the `--remove` option in regenie.
-
-Finally, [UKB best-practises](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=914) strongly suggest to include a batch covariate when running analysis on WES variants to compensate for different capture kits used across different batches. In particular, samples processed in the first 50k release used a different capture kit than the rest. This information is contained in the [category 170](https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=170) of UKB data.
-
-The batches for each samples are available in the `exome_qc/ukbb_WES_tranche_release_cov.tsv` file and you should add this to your covariates when running a rare-variant / gene burden test or any other test using WES variant data.
+- exclude chrY from your analysis is reccomended
+- use the list of passing variants to automatically subset input variants using the `--extract` option in regenie. Files for passing variants are in the `exome_qc/pass_variants` folder.
+- remove samples with sex discordance using the `--remove` option in regenie. The list of individuals to remove is in the file `exome_qc/ukbb_WES_sex_mismatch_sample_ids.tsv`.
+- [UKB best-practises](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=914) strongly suggests to include a batch covariate when running analysis on WES variants to compensate for different capture kits used across different batches. In particular, samples processed in the first 50k release used a different capture kit than the rest. This information is contained in the [category 170](https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=170) of UKB data. The batches for each samples are available in the `exome_qc/ukbb_WES_tranche_release_cov.tsv` file and you should add this to your covariates when running a rare-variant / gene burden test or any other test using WES variant data.
