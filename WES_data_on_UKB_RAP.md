@@ -136,19 +136,21 @@ When performing step2 one should include the following adjustments:
 
 ```bash
 CHROM=1
-INPUT_PREFIX="ukb23157_"
+PASS_VAR_PREFIX="ukb23157"
+BGEN_PREFIX="ukb23159"
 BGEN_FOLDER='/mnt/project/Bulk/Exome\ sequences/Population\ level\ exome\ OQFE\ variants,\ BGEN\ format\ -\ final\ release'
 QC_FOLDER='/mnt/project/exome_qc'
 
-CHROMOSOME_PREFIX="${INPUT_PREFIX}_c${CHROM}_b0_v1"
+BGEN_PREFIX="${BGEN_PREFIX}_c${CHROM}_b0_v1"
+PASS_VAR_FILE="${PASS_VAR_PREFIX}_c${CHROM}_b0_v1.pass_variants.txt"
 
 regenie \
   --step 2 \
-  --bgen ${BGEN_FOLDER}/${CHROMOSOME_PREFIX}.bgen  \
-  --sample ${BGEN_FOLDER}/${CHROMOSOME_PREFIX}.sample \
+  --bgen ${BGEN_FOLDER}/${BGEN_PREFIX}.bgen  \
+  --sample ${BGEN_FOLDER}/${BGEN_PREFIX}.sample \
   --phenoFile pheno.tsv \
   --covarFile covar.tsv \
-  --extract ${QC_FOLDER}/pass_variants/per_chromosome/${CHROMOSOME_PREFIX}.pass_variants.txt \
+  --extract ${QC_FOLDER}/pass_variants/per_chromosome/${PASS_VAR_FILE} \
   --remove ${QC_FOLDER}/ukbb_WES_sex_mismatch_sample_ids.tsv
   [other options...]
 ```
