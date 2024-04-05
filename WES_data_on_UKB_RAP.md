@@ -7,6 +7,7 @@
     - [Reference for filtering strategies](#reference-for-filtering-strategies)
     - [Implementation](#implementation)
   - [Perform associations on the WES data](#perform-associations-on-the-wes-data)
+    - [Important notes when running on the UKB RAP](#important-notes-when-running-on-the-ukb-rap)
     - [Example commands for step2](#example-commands-for-step2)
 
 ## QC of WES data
@@ -132,25 +133,122 @@ When performing step2 one should include the following adjustments:
 - remove samples with sex discordance using the `--remove` option in regenie. The list of individuals to remove is in the file `exome_qc/ukbb_WES_sex_mismatch_sample_ids.tsv`.
 - [UKB best-practises](https://biobank.ndph.ox.ac.uk/showcase/refer.cgi?id=914) strongly suggests to include a batch covariate when running analysis on WES variants to compensate for different capture kits used across different batches. In particular, samples processed in the first 50k release used a different capture kit than the rest. This information is contained in the [category 170](https://biobank.ndph.ox.ac.uk/showcase/label.cgi?id=170) of UKB data. The batches for each samples are available in the `exome_qc/ukbb_WES_tranche_release_cov.tsv` file and you should add this to your covariates when running a rare-variant / gene burden test or any other test using WES variant data.
 
-### Example commands for step2
+### Important notes when running on the UKB RAP
+
+1. Use BED/BIM/FAM datasets, BGEN ones can not be accessed properly and will result in a weird error  
+2. You need to physically transfer genetic dataset files to your local instance. Accessing them in /mnt/project/ is not working and will result in truncated output (only few genes are processed) despite any clear error is present in the logs. This seems due to issues when streaming binary data over the s3 storage. So use the swiss army knife `-iin` option to transfer the files to the local instance.
+
+### Template command for step2
+
+This is a template you can use to perform per-chromosome rare variant analysis in the RAP. This assumes the `dx` command is available. We have a conda env with it named `dxpy_0.369` that you can use.
 
 ```bash
+##### CONFIGURE HERE ACCORDING TO YOUR NEEDS #####
+# Chromosome
 CHROM=1
+
+# Phenotype and covariates
+# Assuming pheno and covar tables are saved in the my_analysis folder in the main project folder
+PHENO_FILE="/mnt/project/my_analysis/pheno.tsv"
+phenoColList="Q1,Q2"
+COVAR_FILE="/mnt/project/my_analysis/covars.tsv"
+covarColList="Covar1,Covar2"
+
+# Comma-sep list of categorical covariates
+# Assuming you are including the exome_tranche as suggested
+# Or leave empty when no categorical covars are used
+catCovarList="exome_tranche"
+
+if [[ $catCovarList != "" ]]
+then
+  echo "Running with categorical covars: $catCovarList"
+  catCovarList="--catCovarList $catCovarList"
+fi
+
+# Configure additional rare-var tests
+vcMaxAAF=0.05 #max AAF for variants tested in additional methods
+vcTests="" #Comma-sep list here. Options: skat,skato,skato-acat,acatv,acato,acto-full
+
+if [[ $vcTests != "" ]]
+then
+  echo "VC Tests enabled!"
+  vcTest_opt="--vc-tests $vcTests"
+fi
+
+# Additional settings
+minMAC=5
+aafBins="0.001,0.01,0.05"
+maskMode="max" #Can be max, sum or comphet
+maxCatLevels=10
+threads=16 #If you change this, adjust instance accordingly
+
+# STEP1 inputs
+# Assume you have your step1 results in step1_data folder unthe the main project folder
+STEP1_DATA_DIR="/step1_data"
+for file in $(dx ls "${STEP1_DATA_DIR}"); do
+  step1_include_files+=" -iin=\"${STEP1_DATA_DIR}/${file}\" "
+done
+
+# Output
+# Assume you want to put results in results_dir under the main project folder
+OUTPUT_DIR="/results_dir/"
+
+
+##### YOU USUALLY DONT NEED TO TOUCH THE PART BELOW #####
+# Define input file paths
 PASS_VAR_PREFIX="ukb23157"
-BGEN_PREFIX="ukb23159"
-BGEN_FOLDER='/mnt/project/Bulk/Exome\ sequences/Population\ level\ exome\ OQFE\ variants,\ BGEN\ format\ -\ final\ release'
+BED_PREFIX="ukb23158"
 QC_FOLDER='/mnt/project/exome_qc'
 
-BGEN_PREFIX="${BGEN_PREFIX}_c${CHROM}_b0_v1"
-PASS_VAR_FILE="${PASS_VAR_PREFIX}_c${CHROM}_b0_v1.pass_variants.txt"
+BED_FOLDER="/Bulk/Exome sequences/Population\ level\ exome\ OQFE\ variants,\ PLINK\ format\ -\ final release/"
+BED_PREFIX="${BED_PREFIX}_c${CHROM}_b0_v1"
+BED_FULL_PATH="${BED_FOLDER}/${BED_PREFIX}_c${CHROM}_b0_v1"
 
-regenie \
-  --step 2 \
-  --bgen ${BGEN_FOLDER}/${BGEN_PREFIX}.bgen  \
-  --sample ${BGEN_FOLDER}/${BGEN_PREFIX}.sample \
-  --phenoFile pheno.tsv \
-  --covarFile covar.tsv \
-  --extract ${QC_FOLDER}/pass_variants/per_chromosome/${PASS_VAR_FILE} \
-  --remove ${QC_FOLDER}/ukbb_WES_sex_mismatch_sample_ids.tsv
-  [other options...]
+PASS_VAR_FOLDER="${QC_FOLDER}/pass_variants/per_chromosome"
+PASS_VAR_FILE="${PASS_VAR_FOLDER}/${PASS_VAR_PREFIX}_c${CHROM}_b0_v1.pass_variants.txt"
+
+EXCLUDE_SAMPLES_FILE="${QC_FOLDER}/ukbb_WES_sex_mismatch_sample_ids.tsv"
+
+SET_LIST_FILE="/mnt/project/${BED_FOLDER}/helper_files/ukb23158_500k_OQFE.sets.txt.gz"
+ANNO_FILE="/mnt/project/${BED_FOLDER}/helper_files/ukb23158_500k_OQFE.annotations.txt.gz"
+MASK_FILE="/mnt/project/${BED_FOLDER}/helper_files/ukb23158_500k_OQFE.masks"
+
+# Configure the regenie command
+regenie_step2_burden_cmd="regenie --step 2 \
+  --bed $BED_PREFIX \
+  --phenoFile $PHENO_FILE \
+  --covarFile $COVAR_FILE \
+  --pred regenie_step1_out_pred.list \
+  --phenoColList ${phenoColList} \
+  --covarColList ${covarColList} \
+  ${catCovarList} \
+  --extract ${PASS_VAR_FILE} \
+  --remove ${EXCLUDE_SAMPLES_FILE} \
+  --minMAC ${minMAC} \
+  --vc-maxAAF ${vcMaxAAF} \
+  --set-list ${SET_LIST_FILE} \
+  --anno-file ${ANNO_FILE} \
+  --mask-def ${MASK_FILE} \
+  --aaf-bins ${aafBins} \
+  --build-mask ${maskMode} \
+  ${vcTest_opt} \
+  --out burden_regenie_chr${CHROM} \
+  --maxCatLevels ${maxCatLevels} --bsize 200 --qt --threads ${threads} --gz"
+
+# Configure the dx run command with swiss-army-knife
+full_cmd="dx run swiss-army-knife \
+    -iimage="ghcr.io/rgcgithub/regenie/regenie:v3.4.1.gz" \
+    -iin=\"${BED_FULL_PATH}.bed\" \
+    -iin=\"${BED_FULL_PATH}.bim\" \
+    -iin=\"${BED_FULL_PATH}.fam\" \
+    ${step1_include_files} \
+    -icmd=\"${regenie_step2_burden_cmd}\" \
+    --name=\"regenie_step2_burden_chr${CHROM}\" \
+    --tag=\"regenie_step2_burden_chr${CHROM}\" \
+    --instance-type=\"mem1_ssd2_v2_x8\" \
+    --priority=\"high\" \
+    --destination=\"${OUTPUT_DIR}\" --brief --yes"
+
+# Launch on the RAP
+$full_cmd
 ```
