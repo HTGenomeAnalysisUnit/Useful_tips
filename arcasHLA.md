@@ -46,10 +46,13 @@ Finally, we may need to aggiust settings for read-length (10X is usually 90bp) a
 
 When running genotype on single-cell data from 10X, the input data is single-end reads with length 90bp. 
 
-It is suggested to first estimate read length and read length SD from the input extracted reads. You can use a command like this:
+It is suggested to first estimate read length and read length SD from the input extracted reads. Here, we estimate these values using only 100k reads to speed-up the process. This is usually fine, but you can remove `head -n 100000` to process the full dataset and get a more accurate estimate. 
+
+You can use a command like this:
 
 ```bash
-zcat extract/sample.extracted.fq.gz | paste - - - - | awk '{sum += length($2); sumsq += (length($2))^2}; END {print "Average:", sum/NR, "; std:", sqrt((sumsq-((sum^2)/NR))/NR)}'
+zcat extract/sample.extracted.fq.gz | paste - - - - | head -n 100000 \
+    | awk '{sum += length($2); sumsq += (length($2))^2}; END {print "Average:", sum/NR, "; std:", sqrt((sumsq-((sum^2)/NR))/NR)}'
 
 Average: 90 , std: 0
 ```
