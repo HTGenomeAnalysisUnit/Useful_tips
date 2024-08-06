@@ -1,9 +1,8 @@
-# Connect and use FARM5 cluster
+# Connect and use FARM22 cluster
 
 To be able to user Sanger cluster you need
 - Sanger user name
-- Sanger SSH password
-- Sanger user password (note this is different from the above)
+- Sanger user password
 - Be added to the cardinal_analysis group in bsub (this may need a request to service desk and you have to take the FARM5 training course)
 
 ## Connect to FARM22 cluster
