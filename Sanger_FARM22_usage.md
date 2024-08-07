@@ -64,7 +64,7 @@ And then you can connect to Sanger FARM22 from the command line using
 
 Once you completed the configuration above 
 
-1. Connect to Sanger server using the configured SSH connections
+1. Open a tunnel to Sanger server using the configured SSH connection. You can use a commnad like this that will open a connection in background on your computer: `ssh -F ~/.ssh/teleport_config -Nf jammy-dev64`
 2. In Firefox, goes to Settings, search for `proxy` and then select Network settings and set your proxy as in this image
 
 ![Proxy settings](<Sanger_FARM22_proxy_settings.png>)
