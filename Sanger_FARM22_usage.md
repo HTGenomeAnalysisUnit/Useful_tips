@@ -1,35 +1,54 @@
 # Connect and use FARM22 cluster
 
-To be able to user Sanger cluster you need
+To be able to use the Sanger cluster you need
 - Sanger user name
 - Sanger user password
-- Be added to the cardinal_analysis group in bsub (this may need a request to service desk and you have to take the FARM5 training course)
+- Be added to the cardinal_analysis group in bsub (this may need a request to the service desk and you have to take the FARM training course)
 
 ## Connect to FARM22 cluster
 
-Sanger access system is now based on Teleport. There are multiple ways to access using either browser interface or command-line.
+Sanger's access system is now based on Teleport. There are multiple ways to access using either a browser interface or the command line.
 
 See the [Sanger documentation](https://sanger.freshservice.com/support/solutions/articles/53000059623) for details on how to set-up teleport and ssh connection for the new system.
 
 ### Use Teleport on the web
 
-The first way is to login with your Sanger credential at `https://sanger.okta.com/` and then select Teleport application. After log-in afgain with your user credentials and Okta authentication, you can select to open a terminal on either gen22 or farm22 system. 
+The first way is to log in with your Sanger credential at `https://sanger.okta.com/` and then select the Teleport application. After login again with your user credentials and Okta authentication, you can select to open a terminal on either the gen22 or farm22 system. 
 
-You can then work freely using the command-line directly on your browser.
+You can then work freely using the command line directly on your browser.
 
 See this [video tutorial](https://app.tango.us/app/workflow/Connect-to-the-Sanger-server-using-Teleport-on-the-web-ea3b4c970ee4445f915bc2226ffa400c) for a demonstration of how to use Teleport on the web.
 
-### Set up teleport on you computer to connect using SSH
+### Set up teleport on your computer to connect using SSH
 
-See the [Sanger documentation](https://sanger.freshservice.com/support/solutions/articles/53000059623) for details on how to set-up teleport and ssh connection from you laptop.
+See the [Sanger documentation](https://sanger.freshservice.com/support/solutions/articles/53000059623) for details on how to set up teleport and ssh connection from your laptop.
 
 Here is a quick start summary of the main steps.
 
-1. Install Teleport on your computer using one of appropriate installer from [Teleport download page]( https://goteleport.com/download/#install-links)
-2. Authenticate your user with Okta with this command: `tsh login --proxy=portal.sanger.ac.uk:443 --auth=okta`
-3. Generate a config file with this command `tsh config > ~/.ssh/teleport_config`
-4. Note down the location of the Identity and Certificate file that you can get using grep `IdentityFile ~/.ssh/teleport_config | grep portal | head -n1` and `grep CertificateFile ~/.ssh/teleport_config | grep portal | head -n1`, respectively.
-5. Open the file `~/.ssh/teleport_config` in a text editor and add the following after the line `# End generated Teleport configuration`
+1. Install Teleport on your computer using the appropriate installer from [Teleport download page]( https://goteleport.com/download/#install-links)
+2. Authenticate your user with Okta with this command
+
+   `tsh login --proxy=portal.sanger.ac.uk:443 --auth=okta`
+   
+4. Generate a config file with this command `tsh config >> ~/.ssh/config`
+5. Note down the location of the Identity and Certificate file that you can get using
+    - Identity file: `grep IdentityFile ~/.ssh/config | grep portal | head -n1`
+    - Certificate file: `grep CertificateFile ~/.ssh/config | grep portal | head -n1`
+6. Create a folder to store control paths using `mkdir ~/.ssh/controlpaths`
+7. Open the file `~/.ssh/config` in a text editor and add the following at the beginning
+
+   ```
+   ControlMaster auto
+   ControlPath ~/.ssh/controlpaths/s_%C
+   TCPKeepAlive yes
+   AddKeysToAgent yes
+   ForwardAgent yes
+   ServerAliveInterval 20
+   ServerAliveCountMax 5
+   ConnectTimeout 45
+   ```  
+
+9. In the file `~/.ssh/config` add the following block after the line `# End generated Teleport configuration`
 
 ```
 Host jammy-dev64 focal-dev64
@@ -46,51 +65,67 @@ Host jammy-dev64 focal-dev64
     HostKeyAlgorithms +ssh-rsa*,rsa-sha2-512
     PubkeyAcceptedKeyTypes +ssh-rsa*
     DynamicForward 8888
+
+Host farm22
+    User <YOUR SANGER USER NAME HERE>
+    HostName farm.internal.sanger.ac.uk
+    ProxyJump jammy-dev64
 ```
 
 ### Access Sanger server in SSH
 
-Once you completed the configuration you can login with Okta using
+Once you have completed the configuration you can log in with Okta using
 
 `tsh login --proxy=portal.sanger.ac.uk:443 --auth=okta`
 
-And then you can connect to Sanger FARM22 from the command line using
+Then you can connect to Sanger FARM22 from the command line using
 
-`tsh ssh eg20@farm22-head1`
+`ssh farm22`
 
-**NB.** The okta token expires every 8h so you will have to login again after this time interval.
+**NB.** The okta token expires every 8h so you must log in again after this time interval.
 
-### Set up proxy to access internal sanger web pages
+### Set up a proxy to access internal Sanger web pages
 
-Once you completed the configuration above 
+Once you have completed the configuration above 
 
-1. Open a tunnel to Sanger server using the configured SSH connection. You can use a commnad like this that will open a connection in background on your computer: `ssh -F ~/.ssh/teleport_config -Nf jammy-dev64`
-2. In Firefox, goes to Settings, search for `proxy` and then select Network settings and set your proxy as in this image
+1. Open a tunnel to the Sanger server using the configured SSH connection. You can use a command like this that will open a connection in the background on your computer
+
+   `ssh -Nf jammy-dev64`
+
+   You can close the tunnel using this command
+
+   `ssh -O exit jammy-dev64`
+   
+3. In Firefox, go to Settings, search for `proxy` and then select Network settings and set your proxy as in this image
 
 ![Proxy settings](<Sanger_FARM22_proxy_settings.png>)
 
-Now you should be able to browse Sanger internal web pages.
+Now you should be able to browse the Sanger internal web pages.
 
-**NB.** It is suggested to change the proxy in a dedicated browser different from the one you use usually. Once the proxy is set, all traffic will be redirected through the proxy so the browser will may not be able to connect to normal Internet websites.
+**NB.** It is suggested to change the proxy in a dedicated browser different from your default one. Once the proxy is set, all traffic will be redirected through the proxy so the browser will may not be able to connect to normal Internet websites.
 
 ## Copy data from FARM22 cluster
 
-Once you completed the configuration above you can use Teleport to copy files from FARM22 thrugh scp. 
+Once you completed the configuration above you can use Teleport to copy files from FARM22 through scp. 
 
-Example of transferring a file from FARM22 to local
+Example of transferring a file from FARM22 to your local computer
 
 ```bash
-tsh scp <username@farm22-head1:/my/path/test.txt ./
+tsh scp <username>@farm22-head1:/my/path/test.txt ./
 ```
 
-Or the other way round from local to FARM22
+Or the other way round from your local system to FARM22
 
 ```bash
-tsh scp ./test.txt <username@farm22-head1:/my/path
+tsh scp ./test.txt <username>@farm22-head1:/my/path
 ```
 
 
 ## Use VS Code on FARM22 cluster
+
+If you performed the configuration described above, when using the VSCode SSH remote extension, you should see a `farm22` host that you can connect to. Using this you will open a remote VSCode session on farm22 login node.
+
+**NB.** Since you are connected to the login node, you can use this session to edit your code, but you MUST NOT perform any heavy computation in this session (including running intensive analysis in a jupyter notebook).
 
 See the [Sanger documentation](https://sanger.freshservice.com/support/solutions/articles/53000059623) on how to configure VSCode to connect to FARM servers.
 
@@ -108,21 +143,21 @@ module load HGI/common/conda/module
 
 Then you can use the standard conda commands. 
 
-**.NB** To activate a conda environment one must use `source` command like in this example 
+**.NB** To activate a conda environment one must use the `source` command like in this example 
 
 ```bash
-source acitvate /full/path/to/conda/env
+source activate /full/path/to/conda/env
 ```
 
 ### Add new software
 
 - Additional software must be installed in `/software/cardinal_analysis/ht`.
-- In this location we have created a `conda_envs` sub-folder that can be used when creating new conda environments
-- Similarly we also created a `singularity` subfolder to store singulatiry containers
+- In this location, we have created a `conda_envs` sub-folder that can be used when creating new conda environments
+- Similarly, we also created a `singularity` subfolder to store singularity containers
 
 ### Use jupyter notebook
 
-Jupyter notebook should always be run using the Sanger Jupyter Hub. Once you set up the proxy connection as described above, you can access the Jupyter Hub at [https://jupyter.internal.sanger.ac.uk/](https://jupyter.internal.sanger.ac.uk/).
+Jupyter notebooks should preferentially be run using the Sanger Jupyter Hub. Once you set up the proxy connection as described above, you can access the Jupyter Hub at [https://jupyter.internal.sanger.ac.uk/](https://jupyter.internal.sanger.ac.uk/).
 
 
 ### Basics of the scheduler
@@ -131,7 +166,7 @@ Sanger uses bsub scheduler.
 
 #### Main scheduler commands
 
-Here we listed the main scheduler commands with main options
+Here we listed the main scheduler commands with the main options
 
 **bsub** (used to submit jobs)
 -e / -o: STDERR and STDOUT log files (you can use %J to add job id to the file name and %I to add the index of the array job)
@@ -178,13 +213,13 @@ source /software/hgi/installs/anaconda3/etc/profile.d/conda.sh
 Main location of CARDINAL data is: `/lustre/scratch123/hgi/projects/cardinal_analysis/`
 
 Inside this directory there are several subdirectories. Main ones are:
-- `analysis`: contains the results of the analysis for each user. **Run all your analysed here.**
+- `analysis`: contains the analysis results for each user. **Run all your analyses here.**
 - `qc`: main data organized by tranche
 - `freezes`: static copy of the data freezes as discussed in meetings. Most of the time you want to use one of these releases.
 
 ### Summary of data organization
 
-1. Each tranche has a number of donor pools that are stored in the `Donor_Quantification` subfolder in a tranche folder. Like: 
+1. Each tranche has several donor pools that are stored in the `Donor_Quantification` subfolder in a tranche folder. Like: 
 
 ```bash
 qc/Cardinal_46112_Nov_02_2022/Donor_Quantification/
@@ -208,6 +243,6 @@ The link between labels like ‘donor0’ and the actual genotype labels for ELG
 
 ### CARDINAL dashboard
 
-There are lots of plots displaying how the deconv, cell type assignment etc in the [official CARDINAL dashboard](https://apps.hgi.sanger.ac.uk/scrna/).
+There are lots of plots displaying how the deconvolution, cell type assignment etc. in the [official CARDINAL dashboard](https://apps.hgi.sanger.ac.uk/scrna/).
 
 Choose the ‘cardinal analysis’ tab to see the QC plots for each stage of the analysis for each tranche:
