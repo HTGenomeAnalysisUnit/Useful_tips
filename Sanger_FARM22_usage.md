@@ -169,27 +169,41 @@ Sanger uses bsub scheduler.
 Here we listed the main scheduler commands with the main options
 
 **bsub** (used to submit jobs)
--e / -o: STDERR and STDOUT log files (you can use %J to add job id to the file name and %I to add the index of the array job)
--I: interactive job
--J: job name
--n: n cores
--M: memory
--q: queue
--R: resources 
--G: group (in theory we all part of cardinal_analysis group)
+
+- `-e / -o`: STDERR and STDOUT log files (you can use %J to add job id to the file name and %I to add the index of the array job)
+- `-I`: interactive job
+- `-J`: job name
+- `-n`: n cores
+- `-M`: memory
+- `-q`: queue
+- `-R`: resources 
+- `-G`: group (in theory we all part of cardinal_analysis group)
 
 **bjobs** (list jobs)
--p: reason for pending
--l: long details on the job
+
+- `-p`: reason for pending
+- `-l`: long details on the job
 
 **bqueues** (show queues status, use this to see available queues)
--w status info
--l jobid: full stats
+
+- `-w` status info
+- `-l` jobid: full stats
 
 **bhosts: list hosts**
--w more info
 
-**show_my_lsf_groups** (show your bsub groups)
+- `-w` more info
+
+**bugroup** (show LSF bsub groups)
+
+To see which LSF groups you are member of you can use: `bugroup | grep $USER`
+
+#### interactive jon template
+
+To request an interactive session you use a command like this. Adjust the memory and cpu requirements as needed.
+
+```
+bsub -I -n 1 -M 4G -q normal -G cardinal_analysis -R "select[mem>4G] rusage[mem=4G] span[hosts=1]" -J test /bin/bash
+```
 
 #### batch job script template
 
