@@ -5,6 +5,30 @@ To be able to use the Sanger cluster you need
 - Sanger user password
 - Be added to the cardinal_analysis group in bsub (this may need a request to the service desk and you have to take the FARM training course)
 
+## Table of contents
+
+- [Connect and use FARM22 cluster](#connect-and-use-farm22-cluster)
+  - [Table of contents](#table-of-contents)
+  - [Connect to FARM22 cluster](#connect-to-farm22-cluster)
+    - [Use Teleport on the web](#use-teleport-on-the-web)
+    - [Set up teleport on your computer to connect using SSH](#set-up-teleport-on-your-computer-to-connect-using-ssh)
+    - [Access Sanger server in SSH](#access-sanger-server-in-ssh)
+    - [Set up a proxy to access internal Sanger web pages](#set-up-a-proxy-to-access-internal-sanger-web-pages)
+  - [Set up connection in Windows](#set-up-connection-in-windows)
+  - [Copy data from FARM22 cluster](#copy-data-from-farm22-cluster)
+  - [Use VS Code on FARM22 cluster](#use-vs-code-on-farm22-cluster)
+  - [Configure your environment on FARM22](#configure-your-environment-on-farm22)
+    - [Access basic software](#access-basic-software)
+    - [Add new software](#add-new-software)
+    - [Use jupyter notebook](#use-jupyter-notebook)
+    - [Basics of the scheduler](#basics-of-the-scheduler)
+      - [Main scheduler commands](#main-scheduler-commands)
+      - [interactive jon template](#interactive-jon-template)
+      - [batch job script template](#batch-job-script-template)
+  - [CARDINAL data](#cardinal-data)
+    - [Summary of data organization](#summary-of-data-organization)
+    - [CARDINAL dashboard](#cardinal-dashboard)
+
 ## Connect to FARM22 cluster
 
 Sanger's access system is now based on Teleport. There are multiple ways to access using either a browser interface or the command line.
@@ -103,6 +127,38 @@ Once you have completed the configuration above
 Now you should be able to browse the Sanger internal web pages.
 
 **NB.** It is suggested to change the proxy in a dedicated browser different from your default one. Once the proxy is set, all traffic will be redirected through the proxy so the browser will may not be able to connect to normal Internet websites.
+
+## Set up connection in Windows
+
+After configuring Teleport access as described above, you can access to the Sanger FARM22 using this teleport command:
+
+`tsh login --proxy=portal.sanger.ac.uk:443 --auth=okta`
+
+To configure the tunnelling in Windows and being able to access Sanger internla resources, you need to configure a tunnel in [Putty](https://www.putty.org/). You can follow these steps:
+
+1. Download putty [last version 1.8](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+2. `tsh puttyconfig YOUR_USERNAME@farm22-head2`
+3. Open putty
+4. In the Putty configuration, select the newly configured proxy for your session and click load
+
+![screenshot](<putty_one.png>)
+
+5. Go to Connection > SSH > Tunnels: insert `L3128` in Source port and `webcache.sanger.ac.uk:3128` in Destination and click add
+
+![screenshot](<putty_two.png>)
+
+6. go back to Session, insert farm22-head2 into the Host Name and save.
+
+![screenshot](<putty_three.png>)
+
+Now next time you need to access to Sanger HPC and open the tunnel follow these steps:
+
+1. open putty
+2. click on farm22-head2 (proxy:portal.sanger.ac.uk) in the saved session 
+3. load
+4. open
+5. you should see a browser opening and Teleport will ask for Okta authentication.
+6. you will be able to Navigate to Sanger webpages in Mozilla if you configured as explained above. 
 
 ## Copy data from FARM22 cluster
 
