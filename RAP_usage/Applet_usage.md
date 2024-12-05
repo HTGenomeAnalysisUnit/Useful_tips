@@ -15,6 +15,7 @@ dx run [applet_name] \
   -iin="filename" #files to be imported from project into the applet before run (aka input files)
   --tag="tag_name" #tag to identify the run
   --instance-type "mem1_ssd1_v2_x16" #instance type to use
+  --priority "normal" #Priority of the job, you can use high, normal, low. High cost more
   --destination="/path/to/folder/" #full path to a folder in the project to store generated data
   --brief --yes #flags to avoid confirmation prompts
 ```
@@ -54,6 +55,7 @@ dx run swiss-army-knife \
   -iimage "docker_image" #docker image to use
   --tag="tag_name" #tag to identify the run
   --instance-type "mem1_ssd1_v2_x16" #instance type to use
+  --priority "normal" #Priority of the job, you can use high, normal, low. High cost more
   --destination="/path/to/folder/" #full path to a folder in the project to store generated data
   --brief --yes #flags to avoid confirmation prompts
 ```
