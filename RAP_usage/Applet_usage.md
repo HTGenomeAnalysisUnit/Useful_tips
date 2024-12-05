@@ -1,5 +1,11 @@
 # Use applet from command line
 
+- [Use applet from command line](#use-applet-from-command-line)
+  - [General principles](#general-principles)
+  - [Access to files](#access-to-files)
+  - [The swiss army knife](#the-swiss-army-knife)
+    - [Regenie example](#regenie-example)
+
 ## General principles
 
 You can run any of the tools (applets) installed in your project from the command line using the `dx run` command. The general syntax is:
@@ -17,6 +23,14 @@ The `-i` option accepts any pair of `key=value` to configure the inputs needed b
 
 Alternatively, you can define all the inputs in a JSON file and use the `-f JSON_FILE` to configure the inputs.
 
+## Access to files
+
+To access files when running the applet you can specify the needed files using `-iin`, this is usually the preferred way. 
+
+Otherwise, data will be available read-only from `/mnt/project` in the applet container. 
+
+All new files created during the processing will be copied to the destination folder in the project after successful completion of the applet.
+
 ## The swiss army knife
 
 Swiss army knife is the main tool available in the RAP, and it contains many useful tools (bcftools, samtools, regenie, bgzip, tabix, etc.). You can use it to run any of these tools from the command line. It can also be used to run custom docker images.
@@ -33,7 +47,18 @@ dx run swiss-army-knife \
 
 You can add `-iimage docker_image` to run a custom docker image. The image should be available in a public repository or in the DNA Nexus platform. In this case commands provided by `-icmd` will be run inside the docker container.
 
-## Regenie example
+```bash
+dx run swiss-army-knife \
+  -iin="filename" #files to be imported from project into the applet before run (aka input files). Can be repeated
+  -icmd="[command_to_run]" #String with the command]
+  -iimage "docker_image" #docker image to use
+  --tag="tag_name" #tag to identify the run
+  --instance-type "mem1_ssd1_v2_x16" #instance type to use
+  --destination="/path/to/folder/" #full path to a folder in the project to store generated data
+  --brief --yes #flags to avoid confirmation prompts
+```
+
+### Regenie example
 
 The following mainly reproduce [this tutorial](https://www.youtube.com/watch?v=762PVlyZJ-U)
 
