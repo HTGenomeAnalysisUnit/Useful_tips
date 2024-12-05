@@ -64,7 +64,7 @@ dx run [tool_name] \
   --brief --yes
 ```
 
-Keep in mind that for both `iin` and `destination` you can use absolute path related to the project you are currently logged in or add a project id like `--destination-"project-id:/Data`
+Keep in mind that for both `iin` and `destination` you can use absolute path related to the project you are currently logged in or add a project id like `--destination-"project-id:/Data"`
 
 In general, files required using `iin` are visible directly in the working dir of the job. All files from the project are visible in `/mnt/project` read-only.
 

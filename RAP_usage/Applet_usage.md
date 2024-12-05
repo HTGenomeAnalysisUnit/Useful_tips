@@ -85,6 +85,6 @@ The following mainly reproduce [this tutorial](https://www.youtube.com/watch?v=7
     --brief --yes
   ```
 
-  ## Create and applet
+## Create and applet
 
-  If something it is not provided in the RAP and you cannot run it easily using swiss-army-knife with a custom docker image, you can create your own applet. This is a bit more complex and requires some knowledge of the DNA Nexus platform. You can find more information in the [official documentation](https://documentation.dnanexus.com/developer/applets).
+If something it is not provided in the RAP and you cannot run it easily using swiss-army-knife with a custom docker image, you can create your own applet. This is a bit more complex and requires some knowledge of the DNA Nexus platform. You can find more information in the [official documentation](https://documentation.dnanexus.com/developer/apps).
