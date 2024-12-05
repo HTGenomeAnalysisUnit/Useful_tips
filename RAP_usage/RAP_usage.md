@@ -59,7 +59,7 @@ dx run [tool_name] \
   -icmd="[command_to_run]" #String with the command
   --tag="Step1_merge" #A tag for monitorin purposes
   --instance-type "mem1_ssd1_v2_x16" #Instance required for the job
-  
+  --priority "normal" #Priority of the job, you can use high, normal, low. High cost more
   --destination="/Regenie_test/" #Destination folder within the project to write to
   --brief --yes
 ```
@@ -67,10 +67,6 @@ dx run [tool_name] \
 Keep in mind that for both `iin` and `destination` you can use absolute path related to the project you are currently logged in or add a project id like `--destination-"project-id:/Data`
 
 In general, files required using `iin` are visible directly in the working dir of the job. All files from the project are visible in `/mnt/project` read-only.
-
- --priority {low,normal,high}
-                        Request a scheduling priority for all resulting jobs. Defaults to high when
-                        --watch, --ssh, or --allow-ssh flags are used.
 
 See [dx run guide](https://documentation.dnanexus.com/user/helpstrings-of-sdk-command-line-utilities#run) for full options
 
