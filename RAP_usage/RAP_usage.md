@@ -92,7 +92,7 @@ By default, the Cloud Workstation App will launch on a mem1_ssd1_v2_x8 [instance
 dx run --instance-type mem1_ssd1_v2_x2 app-cloud_workstation`
 ```
 
-This command will show a job ID in the form `Job ID: job-Gx8ppgQJ08pf6FYK9Yj6fP8q` . You can then use this id to ssh into the running machine and open your terminal
+This command will show a job ID in the form `Job ID: job-Gx8ppgQJ08pf6FYK9Yj6fP8q` . You can then use this id to ssh into the running machine and open your terminal. You may need to wait a few minutes for the instance to be ready.
 
 ```bash
 dx ssh job-Gx8ppgQJ08pf6FYK9Yj6fP8q

@@ -5,10 +5,11 @@
   - [Access to files](#access-to-files)
   - [The swiss army knife](#the-swiss-army-knife)
     - [Regenie example](#regenie-example)
+  - [Create and applet](#create-and-applet)
 
 ## General principles
 
-You can run any of the tools (applets) installed in your project from the command line using the `dx run` command. The general syntax is:
+You can run any of the [tools](https://ukbiobank.dnanexus.com/panx/tools) (applets) installed in your project from the command line using the `dx run` command. The general syntax is:
 
 ```bash
 dx run [applet_name] \
@@ -30,7 +31,7 @@ To access files when running the applet you can specify the needed files using `
 
 Otherwise, data will be available read-only from `/mnt/project` in the applet container. 
 
-All new files created during the processing will be copied to the destination folder in the project after successful completion of the applet.
+All new files created during the processing will be copied to the destination folder (`--destination`) in the project after successful completion of the applet.
 
 ## The swiss army knife
 
@@ -83,3 +84,7 @@ The following mainly reproduce [this tutorial](https://www.youtube.com/watch?v=7
     --destination="/Regenie_test/" \
     --brief --yes
   ```
+
+  ## Create and applet
+
+  If something it is not provided in the RAP and you cannot run it easily using swiss-army-knife with a custom docker image, you can create your own applet. This is a bit more complex and requires some knowledge of the DNA Nexus platform. You can find more information in the [official documentation](https://documentation.dnanexus.com/developer/applets).
