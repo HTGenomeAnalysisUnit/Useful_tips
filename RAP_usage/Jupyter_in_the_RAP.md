@@ -13,7 +13,7 @@
 
 ## Main concepts - READ THIS!
 
-To start a Jupyter Notebook session in the RAP you can simply select "JupyterLab" from the "TOOLS" menu and then start a new seesion with the desired machine according to the resource you need (CPU, memory, etc).
+To start a Jupyter Notebook session in the RAP you can simply select "JupyterLab" from the "Tools" menu and then start a new session with the desired machine according to the resource you need (CPU, memory, etc).
 
 By default the jupyter lab session starts on a empty machine, but you have full admin acces so you can easily install new packages on the terminal using `pip` or `conda`.
 
@@ -103,11 +103,12 @@ wget https://github.com/mamba-org/micromamba-releases/releases/download/2.0.2-2/
 chmod a+x /usr/bin/micromamba
 ```
 
-Then create a folder in the system tree where you can store the environments, for example `/conda_root` and set the `MAMBA_ROOT_PREFIX` to this folder. In this way named environments will be stored in `$MAMBA_ROOT_PREFIX/envs` and you can easily switch between them. Remember that if you open a new terminal session you have to set again the environment variable `MAMBA_ROOT_PREFIX` like shown below.
+Then create a folder in the system tree where you can store the environments, for example `/conda_root` and set the `MAMBA_ROOT_PREFIX` to this folder. In this way named environments will be stored in `$MAMBA_ROOT_PREFIX/envs` and you can easily switch between them. Here, we also add the environment variable `MAMBA_ROOT_PREFIX` to the `.bashrc` file to make it persistent each time you start a new terminal.
 
 ```bash
 mkdir /conda_root
 export MAMBA_ROOT_PREFIX=/conda_root
+echo "export MAMBA_ROOT_PREFIX=/conda_root" >> ~/.bashrc
 micromamba shell init --shell bash 
 ```
 
