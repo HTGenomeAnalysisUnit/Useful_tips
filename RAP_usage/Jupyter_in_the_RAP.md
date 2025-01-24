@@ -172,3 +172,5 @@ The snapshot will be stored in the current project folder in the `.Notebook_snap
 You can then load the snapshot when you start a new session using the dedicate input box.
 
 ![Load_snapshot](images/Jupyterlab_launch_box.png)
+
+In this way, your previous environment will be loaded and the conda env, kernel, bash configurations, etc. you created and saved in the snapshot will be available in the new session.
