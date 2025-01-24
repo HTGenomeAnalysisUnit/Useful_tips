@@ -13,7 +13,7 @@
 
 ## Main concepts - READ THIS!
 
-To start a Jupyter Notebook session in the RAP you can simply select JupyterLab from the tools menu and then start a new seesion with the desired machine according to the resource yoy need (CPU, memory, etc).
+To start a Jupyter Notebook session in the RAP you can simply select "JupyterLab" from the "TOOLS" menu and then start a new seesion with the desired machine according to the resource you need (CPU, memory, etc).
 
 By default the jupyter lab session starts on a empty machine, but you have full admin acces so you can easily install new packages on the terminal using `pip` or `conda`.
 
@@ -103,7 +103,7 @@ wget https://github.com/mamba-org/micromamba-releases/releases/download/2.0.2-2/
 chmod a+x /usr/bin/micromamba
 ```
 
-Then create a folder in the system tree where you can store the environments, for example `/conda_root` and set the `MAMBA_ROOT_PREFIX` to this folder. In this way named environments will be stored in `$MAMBA_ROOT_PREFIX/envs` and you can easily switch between them.
+Then create a folder in the system tree where you can store the environments, for example `/conda_root` and set the `MAMBA_ROOT_PREFIX` to this folder. In this way named environments will be stored in `$MAMBA_ROOT_PREFIX/envs` and you can easily switch between them. Remember that if you open a new terminal session you have to set again the environment variable `MAMBA_ROOT_PREFIX` like shown below.
 
 ```bash
 mkdir /conda_root
