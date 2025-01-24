@@ -5,6 +5,7 @@
 		- [Regular or DNAnexus notebooks](#regular-or-dnanexus-notebooks)
 		- [Access your project files](#access-your-project-files)
 		- [Save your work - IMPORTANT!!](#save-your-work---important)
+	- [Work with GPUs](#work-with-gpus)
 	- [Manage packages in the JupyterLab session](#manage-packages-in-the-jupyterlab-session)
 		- [Setup micromamba and envs space](#setup-micromamba-and-envs-space)
 		- [Make environments available in JupyterLab](#make-environments-available-in-jupyterlab)
@@ -73,6 +74,20 @@ dx upload file1 file2 -d /my/destination/folder
 # Or upload all files in a folder
 dx upload /my/path/* -d /my/destination/folder
 ```
+
+## Work with GPUs
+
+If you need to use a GPU in your JupyterLab session, you can select a machine with a GPU when you start your JupyterLab. The GPU is available in the session and you can use it as you would do on your local machine.
+
+At the moment the GPU specs for GPU enabled instances are:
+
+- GPU model: NVIDIA Tesla V100 16GB (1 to 4 depending on the machine)
+- NVidia drivers: 535.183
+- CUDA version: 12.2
+
+Align with these specs when you prepare your code and environments.
+
+Keep in mind that GPU machines are more expensive than CPU machines, especially those with multiple GPUs. Use them only when you really need them.
 
 ## Manage packages in the JupyterLab session
 
