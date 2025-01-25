@@ -81,7 +81,7 @@ If you need to use a GPU in your JupyterLab session, you can select a machine wi
 
 At the moment the GPU specs for GPU enabled instances are:
 
-- GPU model: NVIDIA Tesla V100 16GB (1 to 4 depending on the machine)
+- GPU model: NVIDIA Tesla V100/T1 16GB (1 to 4 depending on the machine)
 - NVidia drivers: 535.183
 - CUDA version: 12.2
 
@@ -173,4 +173,12 @@ You can then load the snapshot when you start a new session using the dedicate i
 
 ![Load_snapshot](images/Jupyterlab_launch_box.png)
 
-In this way, your previous environment will be loaded and the conda env, kernel, bash configurations, etc. you created and saved in the snapshot will be available in the new session.
+In this way, your previous environment will be loaded and the conda envs, kernels, etc. you created and saved in the snapshot will be available in the new session.
+
+However, the `.bashrc` configuration is not restored. Hence, you have to set environmental variables again when you log in. If you followed the configuration suggested above for micromamaba, you will need to configure xxx again as follows to be able to automatically access your environment with `micromamba activate`.
+
+```bash
+export MAMBA_ROOT_PREFIX=/conda_root
+echo "export MAMBA_ROOT_PREFIX=/conda_root" >> ~/.bashrc
+micromamba shell init --shell bash
+```
