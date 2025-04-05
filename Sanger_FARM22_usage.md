@@ -227,7 +227,7 @@ Here we listed the main scheduler commands with the main options
 **bsub** (used to submit jobs)
 
 - `-e / -o`: STDERR and STDOUT log files (you can use %J to add job id to the file name and %I to add the index of the array job)
-- `-I`: interactive job
+- `-Is`: interactive job
 - `-J`: job name
 - `-n`: n cores
 - `-M`: memory
@@ -253,12 +253,12 @@ Here we listed the main scheduler commands with the main options
 
 To see which LSF groups you are member of you can use: `bugroup | grep $USER`
 
-#### interactive jon template
+#### interactive job template
 
 To request an interactive session you use a command like this. Adjust the memory and cpu requirements as needed.
 
 ```
-bsub -I -n 1 -M 4G -q normal -G cardinal_analysis -R "select[mem>4G] rusage[mem=4G] span[hosts=1]" -J test /bin/bash
+bsub -Is -n 1 -M 4G -q normal -G cardinal_analysis -R "select[mem>4G] rusage[mem=4G] span[hosts=1]" -J test /bin/bash
 ```
 
 #### batch job script template
