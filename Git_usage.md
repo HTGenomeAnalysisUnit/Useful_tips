@@ -98,7 +98,29 @@ git remote set-url --add --push all git@github.com:jigarius/toggl2redmine.git
 git remote set-url --add --push all git@bitbucket.org:jigarius/toggl2redmine.git
 ```
 
-## Undo a commit
+## See git history
+
+This command shows git history in a nice compact way
+
+```bash
+git log --oneline --graph --decorate
+```
+
+This helps in identifying a precise point in history that you may want to visit or revert to
+
+## Revert changes
+
+If you want to rever a change and you have force push capability on the remote repository (in case the repisitoyr is also in remote), the easiest way is to navigate your history and find the hash of the commit you want to go back to. Then run
+
+```bash
+git reset --hard <commit_hash>
+```
+
+After that, you can force push to syncronize the remote repository (force is needed since you have to rewrite history).
+
+```bash
+git push --force
+```
 
 ### Undoing a Specific Commit (That Has Been Pushed)
 

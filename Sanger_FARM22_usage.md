@@ -25,6 +25,8 @@ To be able to use the Sanger cluster you need
       - [Main scheduler commands](#main-scheduler-commands)
       - [interactive jon template](#interactive-jon-template)
       - [batch job script template](#batch-job-script-template)
+  - [Check disk quota](#check-disk-quota)
+  - [Interact with iRODS](#interact-with-irods)
   - [CARDINAL data](#cardinal-data)
     - [Summary of data organization](#summary-of-data-organization)
     - [CARDINAL dashboard](#cardinal-dashboard)
@@ -277,6 +279,46 @@ bsub -Is -n 1 -M 4G -q normal -G cardinal_analysis -R "select[mem>4G] rusage[mem
 #Add the following line if you need to activate conda envs in your script
 source /software/hgi/installs/anaconda3/etc/profile.d/conda.sh
 ```
+
+## Check disk quota
+
+If you suspect we reached the quota of N files / storage you can use a command like this to check the quota status
+
+```bash
+lfs quota -h -g cardinal_analysis /lustre/scratch124
+```
+
+## Interact with iRODS
+
+You can backup data to iRODS for long-term archiving. First, you need to be registered for the iRODS service. You can activate your iRODS access through [FreshService ticket](https://sanger.freshservice.com/support/catalog/items/56).
+
+Then you can navigate the iRODS storage like this
+
+```bash
+module load ISG/IRODS/1.0
+iinit 
+
+ils /
+ils /humgen
+```
+
+To backup data to iRODS the easiest way is to use the humgen ibackup module
+
+```bash
+module load HGI/common/ibackup/humgen
+ibackup add -n cardinal_core -p /lustre/scratch124/humgen/projects_v2/cardinal_analysis/analysis/core_dataset
+```
+
+The `-n` here is just a generic named used to identify your request, while `-p` is the full path of the folder you want to backup.
+
+To check where your data will be placed in iRODS and the status of your backup you can use the name set before with this command
+
+```bash
+ibackup status -n cardinal_core
+```
+
+Please refer to [the official documentation](https://hgi-projects.pages.internal.sanger.ac.uk/documentation/docs/tutorials/ibackup/) of ibackup for more details.
+
 
 ## CARDINAL data
 
