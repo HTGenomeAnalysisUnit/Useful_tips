@@ -178,6 +178,40 @@ Or the other way round from your local system to FARM22
 tsh scp ./test.txt <username>@farm22-head1:/my/path
 ```
 
+### Copy data from/to FARM22 from an HPC cluster 
+
+Teleport is installed as a module. Enable it using
+
+```bash
+module load teleport/18.5.0
+```
+
+First, replicate the [configuration steps](#set-up-teleport-on-your-computer-to-connect-using-ssh) on the HPC cluster you want to use to access FARM22.
+
+At the login step you have to use
+
+```bash
+tsh login --proxy=portal.sanger.ac.uk:443 --auth=okta --browser=none
+```
+
+You will see a message like this:
+
+```bash
+Use the following URL to authenticate:
+ http://127.0.0.1:<port_number>/xxxxx-xxxx-xxxx-xxxx-xxxxxxxxx
+```
+
+Then on your Mac laptop open the command line and established a tunnel with this command
+
+```bash
+ssh -L <port_number>:127.0.0.1:<port_number> <username>@hpclogin.fht.org
+```
+
+In your browser you can then connect to the indicated URL to complete the authentication process.
+
+Complete the other configuration steps and for future connection you will then be able to connect to FARM22 directly from the HPC by authenticating using the commands reported above.
+
+Now you can use `tsh scp` and other commands to communicate directly with the FARM22 system.
 
 ## Use VS Code on FARM22 cluster
 
